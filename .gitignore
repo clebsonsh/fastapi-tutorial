@@ -1,3 +1,6 @@
+# sqlite db
+blog.db
+
 # VENV files
 .fastapi-env
 
