@@ -1,9 +1,10 @@
-from typing import List
 from fastapi import FastAPI, Depends, status, HTTPException
+from typing import List
 from sqlalchemy.orm import Session
 
 from . import models, schemas
 from .database import engine, SessionLocal
+from .hashing import Hash
 
 app = FastAPI()
 
@@ -85,7 +86,7 @@ def create(request: schemas.User, db: Session = Depends(get_db)):
     new_user = models.User(
         name=request.name,
         email=request.email,
-        password=request.password
+        password=Hash.bcrypt(request.password)
     )
 
     db.add(new_user)
