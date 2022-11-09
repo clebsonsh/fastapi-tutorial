@@ -18,7 +18,7 @@ def get_db():
         db.close()
 
 
-@app.get('/blog', status_code=status.HTTP_200_OK, response_model=List[schemas.ShowBLog])
+@app.get('/blog', status_code=status.HTTP_200_OK, response_model=List[schemas.ShowBlog])
 def index(db: Session = Depends(get_db)):
     blogs = db.query(models.Blog).all()
     return blogs
@@ -39,7 +39,7 @@ def create(request: schemas.Blog, db: Session = Depends(get_db)):
     return new_blog
 
 
-@app.get('/blog/{id}', status_code=status.HTTP_200_OK, response_model=schemas.ShowBLog)
+@app.get('/blog/{id}', status_code=status.HTTP_200_OK, response_model=schemas.ShowBlog)
 def show(id: int, db: Session = Depends(get_db)):
     blog = db.query(models.Blog).get(id)
     if not blog:
@@ -78,3 +78,18 @@ def destroy(id: int, db: Session = Depends(get_db)):
 
     blog.delete(synchronize_session=False)
     db.commit()
+
+
+@app.post('/user')
+def create(request: schemas.User, db: Session = Depends(get_db)):
+    new_user = models.User(
+        name=request.name,
+        email=request.email,
+        password=request.password
+    )
+
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return new_user
