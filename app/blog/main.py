@@ -81,7 +81,13 @@ def destroy(id: int, db: Session = Depends(get_db)):
     db.commit()
 
 
-@app.post('/user')
+@app.get('/user', status_code=status.HTTP_200_OK, response_model=List[schemas.ShowUser])
+def index(db: Session = Depends(get_db)):
+    users = db.query(models.User).all()
+    return users
+
+
+@app.post('/user', response_model=schemas.ShowUser)
 def create(request: schemas.User, db: Session = Depends(get_db)):
     new_user = models.User(
         name=request.name,
@@ -94,3 +100,14 @@ def create(request: schemas.User, db: Session = Depends(get_db)):
     db.refresh(new_user)
 
     return new_user
+
+
+@app.get('/user/{id}', status_code=status.HTTP_200_OK, response_model=schemas.ShowUser)
+def show(id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).get(id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with id {id} not found"
+        )
+    return user
