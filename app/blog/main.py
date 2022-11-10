@@ -40,7 +40,8 @@ def create(request: schemas.Blog, db: Session = Depends(get_db)):
     new_blog = models.Blog(
         title=request.title,
         body=request.body,
-        published=request.published
+        published=request.published,
+        user_id=1
     )
 
     db.add(new_blog)
